@@ -156,5 +156,5 @@ def check_url(url):
         if "童书" in str(breadcrumb):
             controller.add_url(url)
             time.sleep(0.01)
-    except error.HTTPError as e:
+    except (error.HTTPError, UnicodeError) as e:
         print(e.code)
