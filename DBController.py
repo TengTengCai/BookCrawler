@@ -36,5 +36,6 @@ class Controller(object):
     def get_url(self):
         temp = random.randint(1, 100)
         result = self.urls.find({"isExist": "false"}).skip(temp).limit(1)
+        # result = self.urls.find_one({"isExist": "false"})
         return result[0]["url"]
 

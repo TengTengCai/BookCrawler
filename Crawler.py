@@ -48,54 +48,59 @@ class Crawler:
         book['image_url'] = soup.find("div", {"class": "big_pic"}).img['src']
         book['book_type'] = soup.find("div", {"class": "breadcrumb"}).get_text(strip=True)
         book['introduction'] = soup.find("span", {"class": "head_title_name"}).get_text(strip=True)
-        book['author'] = soup.find("span", {"id": "author"}).text
-        messbox = soup.find("div", {"class": "messbox_info"})
-        if messbox is None:
-            book['publishing'] = None
-            book['publishing_time'] = None
+        author = soup.find("span", {"id": "author"})
+        if author is None:
+            book['author'] = ""
         else:
-            if len(messbox.contents) < 3:
-                book['publishing'] = None
-            elif len(messbox.contents) < 4:
-                book['publishing_time'] = None
+            book['author'] = soup.find("span", {"id": "author"}).text
+        messbox = soup.find("div", {"class": "messbox_info"})
+        length = len(messbox.contents)
+        if length > 5:
+            temp = messbox.contents[2].get_text(strip=True)
+            if "出版时间" in temp:
+                book['publishing_time'] = temp
             else:
-                book['publishing'] = messbox.contents[2].a.text
+                book['publishing'] = temp
                 book['publishing_time'] = messbox.contents[3].get_text(strip=True)
+        else:
+            book['publishing'] = ""
+            book['publishing_time'] = ""
+
         book['price'] = soup.find("p", {"id": "dd-price"}).get_text(strip=True).split("¥")[1]
         editors_choice = soup.find("div", {"id": "abstract"})
         if editors_choice is None:
-            book['editors_choice'] = None
+            book['editors_choice'] = ""
         else:
             book['editors_choice'] = editors_choice.contents[1].get_text()
         content_validity = soup.find("div", {"id": "content"})
         if content_validity is None:
-            book['content_validity'] = None
+            book['content_validity'] = ""
         else:
             book['content_validity'] = content_validity.contents[1].get_text()
         about_author = soup.find("div", {"id": "authorIntroduction"})
         if about_author is None:
-            book['about_author'] = None
+            book['about_author'] = ""
         else:
             book['about_author'] = about_author.contents[1].get_text()
         catalog = soup.find("textarea", {"id": "catalog-textarea"})
         if catalog is None:
             catalog2 = soup.find("div", {"id": "catalog"})
             if catalog2 is None:
-                book['catalog'] = None
+                book['catalog'] = ""
             else:
                 book['catalog'] = catalog2.contents[1].get_text()
         else:
             book['catalog'] = catalog.get_text(strip=True)
         media_reviews = soup.find("div", {"id": "mediaFeedback"})
         if media_reviews is None:
-            book['media_reviews'] = None
+            book['media_reviews'] = ""
         else:
             book['media_reviews'] = media_reviews.get_text()
         # print(soup)
 
         controller = Controller()
         controller.insert_to_db(book)
-
+        # print(book)
         print(url + "完成")
         try:
             thread_id = str(random.randint(1, 1000))
@@ -156,5 +161,5 @@ def check_url(url):
         if "童书" in str(breadcrumb):
             controller.add_url(url)
             time.sleep(0.01)
-    except (error.HTTPError, UnicodeError) as e:
+    except (error.HTTPError, UnicodeDecodeError) as e:
         print(e.code)
