@@ -14,7 +14,6 @@ from DBController import Controller
 # noinspection PyCallingNonCallable
 
 class Crawler:
-
     def get_book(self, url):
         book = {}
 
@@ -52,13 +51,13 @@ class Crawler:
         book['author'] = soup.find("span", {"id": "author"}).text
         messbox = soup.find("div", {"class": "messbox_info"})
         if messbox is None:
-            book['publishing'] = ""
-            book['publishing_time'] = ""
+            book['publishing'] = None
+            book['publishing_time'] = None
         else:
             if len(messbox.contents) < 3:
-                book['publishing'] = ""
-            elif len(messbox.contents)<4:
-                book['publishing_time'] = ""
+                book['publishing'] = None
+            elif len(messbox.contents) < 4:
+                book['publishing_time'] = None
             else:
                 book['publishing'] = messbox.contents[2].a.text
                 book['publishing_time'] = messbox.contents[3].get_text(strip=True)
@@ -75,21 +74,21 @@ class Crawler:
             book['content_validity'] = content_validity.contents[1].get_text()
         about_author = soup.find("div", {"id": "authorIntroduction"})
         if about_author is None:
-            book['about_author'] = ""
+            book['about_author'] = None
         else:
             book['about_author'] = about_author.contents[1].get_text()
         catalog = soup.find("textarea", {"id": "catalog-textarea"})
         if catalog is None:
             catalog2 = soup.find("div", {"id": "catalog"})
             if catalog2 is None:
-                book['catalog'] = ""
+                book['catalog'] = None
             else:
                 book['catalog'] = catalog2.contents[1].get_text()
         else:
             book['catalog'] = catalog.get_text(strip=True)
         media_reviews = soup.find("div", {"id": "mediaFeedback"})
         if media_reviews is None:
-            book['media_reviews'] = ""
+            book['media_reviews'] = None
         else:
             book['media_reviews'] = media_reviews.get_text()
         # print(soup)
@@ -105,23 +104,23 @@ class Crawler:
         except:
             print("Error: 无法启动线程")
 
-        # get_useful_url(soup)
+            # get_useful_url(soup)
 
-        # new_url = controller.get_url()
-        # if not new_url is None:
-        #     self.get_book(new_url)
+            # new_url = controller.get_url()
+            # if not new_url is None:
+            #     self.get_book(new_url)
 
 
-class MyThread (threading.Thread):
+class MyThread(threading.Thread):
     def __init__(self, soup, thread_id):
         threading.Thread.__init__(self)
         self.soup = soup
         self.thread_id = thread_id
 
     def run(self):
-        print(self.thread_id+"线程开始：")
+        print(self.thread_id + "线程开始：")
         get_useful_url(self.soup, self.thread_id)
-        print(self.thread_id+"线程退出：")
+        print(self.thread_id + "线程退出：")
 
 
 def get_useful_url(soup, thread_id):
@@ -144,7 +143,7 @@ def get_useful_url(soup, thread_id):
     for url in url_list:
         if not controller.is_exist_url(url):
             check_url(url)
-            print(thread_id+"扫描："+url)
+            print(thread_id + "扫描：" + url)
 
 
 def check_url(url):
