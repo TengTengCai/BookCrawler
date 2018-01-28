@@ -19,7 +19,7 @@ start = time.time()
 controller = Controller()
 crawler = Crawler.Crawler()
 url = controller.get_url()
-# url = "http://product.dangdang.com/410260471.html"
+# url = "http://product.dangdang.com/1280042757.html"
 while not url is None:
     print("加载："+url)
     crawler.get_book(url)

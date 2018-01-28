@@ -39,3 +39,6 @@ class Controller(object):
         # result = self.urls.find_one({"isExist": "false"})
         return result[0]["url"]
 
+    def delete_url(self, url):
+        self.urls.remove({'url': url})
+

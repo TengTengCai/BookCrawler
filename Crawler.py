@@ -16,7 +16,7 @@ from DBController import Controller
 class Crawler:
     def get_book(self, url):
         book = {}
-
+        controller = Controller()
         # req = Request(url)
 
         driver = webdriver.Firefox(executable_path='E:\DevelopTools\Python\geckodriver')
@@ -42,7 +42,10 @@ class Crawler:
             driver.close()
         # target = driver.find_element_by_id("footer")
         # driver.execute_script("arguments[0].scrollIntoView();", target)  # 拖动到可见的元素去
-
+        null_wrap = soup.find("div", {"class": "null_wrap"})
+        if not null_wrap is None:
+            controller.delete_url(url)
+            return
         book['url'] = url
         book['book_name'] = soup.find("div", {"class": "name_info"}).h1.get_text(strip=True)
         book['image_url'] = soup.find("div", {"class": "big_pic"}).img['src']
@@ -97,8 +100,6 @@ class Crawler:
         else:
             book['media_reviews'] = media_reviews.get_text()
         # print(soup)
-
-        controller = Controller()
         controller.insert_to_db(book)
         # print(book)
         print(url + "完成")
