@@ -14,6 +14,7 @@ from DBController import Controller
 # noinspection PyCallingNonCallable
 
 class Crawler:
+
     def get_book(self, url):
         book = {}
 
@@ -22,8 +23,8 @@ class Crawler:
         driver = webdriver.Firefox(executable_path='E:\DevelopTools\Python\geckodriver')
         # driver = webdriver.Ie(executable_path='E:\DevelopTools\Python\IEDriverServer')
         try:
-            driver.set_page_load_timeout(100)
-            driver.set_script_timeout(100)
+            driver.set_page_load_timeout(30)
+            driver.set_script_timeout(30)
             driver.get(url)
             js = "var q=document.documentElement.scrollTop=100000"
             driver.execute_script(js)
@@ -50,8 +51,17 @@ class Crawler:
         book['introduction'] = soup.find("span", {"class": "head_title_name"}).get_text(strip=True)
         book['author'] = soup.find("span", {"id": "author"}).text
         messbox = soup.find("div", {"class": "messbox_info"})
-        book['publishing'] = messbox.contents[2].a.text
-        book['publishing_time'] = messbox.contents[3].get_text(strip=True)
+        if messbox is None:
+            book['publishing'] = ""
+            book['publishing_time'] = ""
+        else:
+            if len(messbox.contents) < 3:
+                book['publishing'] = ""
+            elif len(messbox.contents)<4:
+                book['publishing_time'] = ""
+            else:
+                book['publishing'] = messbox.contents[2].a.text
+                book['publishing_time'] = messbox.contents[3].get_text(strip=True)
         book['price'] = soup.find("p", {"id": "dd-price"}).get_text(strip=True).split("¥")[1]
         editors_choice = soup.find("div", {"id": "abstract"})
         if editors_choice is None:
