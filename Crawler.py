@@ -14,6 +14,7 @@ from DBController import Controller
 # noinspection PyCallingNonCallable
 
 class Crawler:
+
     def get_book(self, url):
         book = {}
         controller = Controller()
@@ -47,7 +48,11 @@ class Crawler:
             controller.delete_url(url)
             return
         book['url'] = url
-        book['book_name'] = soup.find("div", {"class": "name_info"}).h1.get_text(strip=True)
+        book_name = soup.find("div", {"class": "name_info"})
+        if book_name is None:
+            controller.delete_url(url)
+            return
+        book['book_name'] = book_name.h1.get_text(strip=True)
         book['image_url'] = soup.find("div", {"class": "big_pic"}).img['src']
         book['book_type'] = soup.find("div", {"class": "breadcrumb"}).get_text(strip=True)
         book['introduction'] = soup.find("span", {"class": "head_title_name"}).get_text(strip=True)
@@ -57,18 +62,11 @@ class Crawler:
         else:
             book['author'] = soup.find("span", {"id": "author"}).text
         messbox = soup.find("div", {"class": "messbox_info"})
-        length = len(messbox.contents)
-        if length > 5:
-            temp = messbox.contents[2].get_text(strip=True)
-            if "出版时间" in temp:
-                book['publishing_time'] = temp
-            else:
-                book['publishing'] = temp
-                book['publishing_time'] = messbox.contents[3].get_text(strip=True)
-        else:
-            book['publishing'] = ""
-            book['publishing_time'] = ""
-
+        for item in messbox:
+            if "出版社" in str(item):
+                book['publishing'] = item.get_text(strip=True)
+            elif "出版时间" in str(item):
+                book['publishing_time'] = item.get_text(strip=True)
         book['price'] = soup.find("p", {"id": "dd-price"}).get_text(strip=True).split("¥")[1]
         editors_choice = soup.find("div", {"id": "abstract"})
         if editors_choice is None:
@@ -161,6 +159,6 @@ def check_url(url):
         controller = Controller()
         if "童书" in str(breadcrumb):
             controller.add_url(url)
-            time.sleep(0.01)
+            time.sleep(0.1)
     except (error.HTTPError, UnicodeDecodeError) as e:
         print(e.code)

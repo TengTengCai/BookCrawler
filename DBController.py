@@ -40,5 +40,5 @@ class Controller(object):
         return result[0]["url"]
 
     def delete_url(self, url):
-        self.urls.remove({'url': url})
+        self.urls.update({"url": url}, {'$set': {"isExist": "true"}})
 
