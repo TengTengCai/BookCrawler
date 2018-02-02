@@ -1,6 +1,6 @@
 import random
 
-from pymongo import MongoClient
+from pymongo import *
 
 
 class Controller(object):
@@ -16,8 +16,11 @@ class Controller(object):
         self.urls = self.db.urls
 
     def insert_to_db(self, data):
-        self.books.insert_one(data)
-        self.urls.update({"url": data["url"]}, {'$set': {"isExist": "true"}})
+        try:
+            self.books.insert_one(data)
+            self.urls.update({"url": data["url"]}, {'$set': {"isExist": "true"}})
+        except ConnectionError as e:
+            print("插入数据失败："+e)
 
     def add_url(self, url):
         result = self.urls.find_one({"url": url})
