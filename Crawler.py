@@ -6,7 +6,13 @@ import time
 import re
 import threading
 import random
+"""
+爬虫，进行动态网页获取，解析数据，子线程 广度遍历URL
 
+Author:藤藤菜
+Version:1.0
+Date:2018年2月7日
+"""
 # 写成一个类
 from DBController import Controller
 
@@ -23,7 +29,7 @@ class Crawler:
         driver = webdriver.Firefox(executable_path='E:\DevelopTools\Python\geckodriver')
         # driver = webdriver.Ie(executable_path='E:\DevelopTools\Python\IEDriverServer')
         try:
-            driver.set_page_load_timeout(30)
+            driver.set_page_load_timeout(60)
             driver.set_script_timeout(30)
             driver.get(url)
             js = "var q=document.documentElement.scrollTop=100000"
@@ -115,6 +121,7 @@ class Crawler:
             #     self.get_book(new_url)
 
 
+# 子线程
 class MyThread(threading.Thread):
     def __init__(self, soup, thread_id):
         threading.Thread.__init__(self)
@@ -127,6 +134,7 @@ class MyThread(threading.Thread):
         print(self.thread_id + "线程退出：")
 
 
+# 获取有用的URL
 def get_useful_url(soup, thread_id):
     controller = Controller()
     url_list = []
@@ -150,6 +158,7 @@ def get_useful_url(soup, thread_id):
             print(thread_id + "扫描：" + url)
 
 
+# 检查URL是否已经被获取过了
 def check_url(url):
     try:
         response = urlopen(url)

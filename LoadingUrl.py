@@ -3,6 +3,14 @@ from bs4 import BeautifulSoup
 from DBController import Controller
 import time
 
+"""
+通过搜索规则获取URL列表
+
+Author:藤藤菜
+Version:1.0
+Date:2018年2月3日
+"""
+
 
 class LoadingUrl(object):
 
