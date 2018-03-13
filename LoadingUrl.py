@@ -42,7 +42,7 @@ class LoadingUrl(object):
                     num = str(num).split("/")[1]
                     num = int(num)
                     print(num)
-                    for k in range(1, num + 1):
+                    for k in range(1, num):
                         print("当前页数：" + str(k))
                         urls = url + "pg" + str(k) + "-cp01.41." + temp1 + "." + temp2 + ".00.00.html"
                         self.search_url(urls)

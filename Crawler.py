@@ -158,7 +158,7 @@ def get_useful_url(soup, thread_id):
             print(thread_id + "扫描：" + url)
 
 
-# 检查URL是否已经被获取过了
+# 检查URL是否符合要求
 def check_url(url):
     try:
         response = urlopen(url)

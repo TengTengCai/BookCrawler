@@ -19,7 +19,11 @@ class Controller(object):
 
     # 初始化构造方法，对数据库的地址数据库名称进行初始化
     def __init__(self):
-        self.conn = MongoClient("123.207.85.99:27017")
+        self.conn = MongoClient("123.207.85.99:27017",
+                                username='book',
+                                password='tianjun223.',
+                                authSource='book',
+                                authMechanism='SCRAM-SHA-1')
         self.db = self.conn.get_database("book")
         self.books = self.db.book
         self.urls = self.db.urls
