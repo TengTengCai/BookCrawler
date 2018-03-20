@@ -6,6 +6,7 @@ import time
 import re
 import threading
 import random
+
 """
 爬虫，进行动态网页获取，解析数据，子线程 广度遍历URL
 
@@ -169,5 +170,5 @@ def check_url(url):
         if "童书" in str(breadcrumb):
             controller.add_url(url)
             time.sleep(0.1)
-    except (error.HTTPError, UnicodeDecodeError) as e:
+    except (error.HTTPError, UnicodeDecodeError, TimeoutError, error.URLError) as e:
         print(e.code)
