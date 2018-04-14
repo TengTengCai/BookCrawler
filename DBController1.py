@@ -75,3 +75,4 @@ class UrlColl(object):
             self._urls.update({'url': url}, {'$set': {'isExist': 'true'}})
         except (errors, Exception) as e:
             self._error_log.write_error('UrlColl更新URl数据错误' + e)
+
