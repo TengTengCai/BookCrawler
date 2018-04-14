@@ -6,12 +6,15 @@ import time
 import re
 from threading import Thread
 from random import randint
+from ErrorLog import ErrorLog
 
 
 class Crawler(object):
-    def __init__(self, book_coll, url_coll):
+    def __init__(self, book_coll, url_coll, thread_count):
         self._book_coll = book_coll
         self._url_coll = url_coll
+        self._thread_count = thread_count
+        self._error_log = ErrorLog()
 
     def get_book(self, url):
         book = {}
@@ -35,6 +38,7 @@ class Crawler(object):
             soup = BeautifulSoup(driver.page_source, "lxml")
         except Exception as e:
             print(e)
+            self._error_log.write_error(e)
             return
         finally:
             driver.close()
@@ -99,23 +103,27 @@ class Crawler(object):
         # print(book)
         print(url + "完成")
         try:
-            thread = MyThread(soup, self._url_coll)
+            self._thread_count.add_one()
+            thread = MyThread(soup, self._url_coll, self._thread_count)
             thread.start()
         except Exception as e:
+            self._error_log.write_error(e)
             print("Error: 无法启动线程" + e)
 
 
 # 子线程
 class MyThread(Thread):
-    def __init__(self, soup, url_coll):
+    def __init__(self, soup, url_coll, thread_count):
         super().__init__()
         self._soup = soup
         self._url_coll = url_coll
+        self._thread_count = thread_count
         self._thread_id = str(randint(100, 1000))
 
     def run(self):
         print(self._thread_id + "线程开始：")
         get_useful_url(self._soup, self._thread_id, self._url_coll)
+        self._thread_count.remove_one()
         print(self._thread_id + "线程退出：")
 
 

@@ -2092,3 +2092,36 @@ Unable to read VR Path Registry from C:\Users\Administrator\AppData\Local\openvr
 1523723556974	Marionette	WARN	TLS certificate errors will be ignored for this session
 1523723569314	geckodriver	INFO	geckodriver 0.19.1
 1523723569327	geckodriver	INFO	Listening on 127.0.0.1:54118
+1523726146642	geckodriver	INFO	geckodriver 0.19.1
+1523726146657	geckodriver	INFO	Listening on 127.0.0.1:54389
+1523726149719	mozrunner::runner	INFO	Running command: "D:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-profile" "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\rust_mozprofile.6rjPBeoCMpDC"
+Unable to read VR Path Registry from C:\Users\Administrator\AppData\Local\openvr\openvrpaths.vrpath
+1523726151240	Marionette	INFO	Enabled via --marionette
+Unable to read VR Path Registry from C:\Users\Administrator\AppData\Local\openvr\openvrpaths.vrpath
+Unable to read VR Path Registry from C:\Users\Administrator\AppData\Local\openvr\openvrpaths.vrpath
+Unable to read VR Path Registry from C:\Users\Administrator\AppData\Local\openvr\openvrpaths.vrpath
+1523726153228	Marionette	INFO	Listening on port 54397
+1523726153396	Marionette	WARN	TLS certificate errors will be ignored for this session
+Unable to read VR Path Registry from C:\Users\Administrator\AppData\Local\openvr\openvrpaths.vrpath
+1523726164660	geckodriver	INFO	geckodriver 0.19.1
+1523726164671	geckodriver	INFO	Listening on 127.0.0.1:54515
+1523726167733	mozrunner::runner	INFO	Running command: "D:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-profile" "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\rust_mozprofile.heoKWA3VNSiP"
+Unable to read VR Path Registry from C:\Users\Administrator\AppData\Local\openvr\openvrpaths.vrpath
+1523726169258	Marionette	INFO	Enabled via --marionette
+Unable to read VR Path Registry from C:\Users\Administrator\AppData\Local\openvr\openvrpaths.vrpath
+Unable to read VR Path Registry from C:\Users\Administrator\AppData\Local\openvr\openvrpaths.vrpath
+Unable to read VR Path Registry from C:\Users\Administrator\AppData\Local\openvr\openvrpaths.vrpath
+Unable to read VR Path Registry from C:\Users\Administrator\AppData\Local\openvr\openvrpaths.vrpath
+1523726171158	Marionette	INFO	Listening on port 54523
+1523726171430	Marionette	WARN	TLS certificate errors will be ignored for this session
+1523726182247	geckodriver	INFO	geckodriver 0.19.1
+1523726182258	geckodriver	INFO	Listening on 127.0.0.1:54635
+1523726185335	mozrunner::runner	INFO	Running command: "D:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-profile" "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\rust_mozprofile.18CFmGFNU5IE"
+Unable to read VR Path Registry from C:\Users\Administrator\AppData\Local\openvr\openvrpaths.vrpath
+1523726186810	Marionette	INFO	Enabled via --marionette
+Unable to read VR Path Registry from C:\Users\Administrator\AppData\Local\openvr\openvrpaths.vrpath
+Unable to read VR Path Registry from C:\Users\Administrator\AppData\Local\openvr\openvrpaths.vrpath
+Unable to read VR Path Registry from C:\Users\Administrator\AppData\Local\openvr\openvrpaths.vrpath
+Unable to read VR Path Registry from C:\Users\Administrator\AppData\Local\openvr\openvrpaths.vrpath
+1523726188730	Marionette	INFO	Listening on port 54643
+1523726189042	Marionette	WARN	TLS certificate errors will be ignored for this session
