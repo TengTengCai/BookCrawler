@@ -23,7 +23,7 @@ class MyDatabase(object):
 
     @property
     def database(self):
-        return self.database
+        return self._database
 
 
 class BookColl(object):
@@ -43,7 +43,7 @@ class UrlColl(object):
     def __init__(self, my_database):
         self._error_log = ErrorLog()
         self._db = my_database
-        self._urls = self._db.url
+        self._urls = self._db.urls
 
     def add_url(self, url):
         try:
