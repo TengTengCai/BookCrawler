@@ -4,27 +4,17 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 import time
 import re
-import threading
-import random
-
-"""
-爬虫，进行动态网页获取，解析数据，子线程 广度遍历URL
-
-Author:藤藤菜
-Version:1.0
-Date:2018年2月7日
-"""
-# 写成一个类
-from DBController import Controller
+from threading import Thread
+from random import randint
 
 
-# noinspection PyCallingNonCallable
-
-class Crawler:
+class Crawler(object):
+    def __init__(self, book_coll, url_coll):
+        self._book_coll = book_coll
+        self._url_coll = url_coll
 
     def get_book(self, url):
         book = {}
-        controller = Controller()
         # req = Request(url)
 
         driver = webdriver.Firefox(executable_path='E:\DevelopTools\Python\geckodriver')
@@ -52,12 +42,12 @@ class Crawler:
         # driver.execute_script("arguments[0].scrollIntoView();", target)  # 拖动到可见的元素去
         null_wrap = soup.find("div", {"class": "null_wrap"})
         if not null_wrap is None:
-            controller.delete_url(url)
+            self._url_coll.update_url(url)
             return
         book['url'] = url
         book_name = soup.find("div", {"class": "name_info"})
         if book_name is None:
-            controller.delete_url(url)
+            self._url_coll.update_url(url)
             return
         book['book_name'] = book_name.h1.get_text(strip=True)
         book['image_url'] = soup.find("div", {"class": "big_pic"}).img['src']
@@ -105,39 +95,32 @@ class Crawler:
         else:
             book['media_reviews'] = media_reviews.get_text()
         # print(soup)
-        controller.insert_to_db(book)
+        self._book_coll.insert_to_db(book)
         # print(book)
         print(url + "完成")
         try:
-            thread_id = str(random.randint(1, 1000))
-            thread = MyThread(soup, thread_id)
+            thread = MyThread(soup, self._url_coll)
             thread.start()
         except Exception as e:
             print("Error: 无法启动线程" + e)
 
-            # get_useful_url(soup)
-
-            # new_url = controller.get_url()
-            # if not new_url is None:
-            #     self.get_book(new_url)
-
 
 # 子线程
-class MyThread(threading.Thread):
-    def __init__(self, soup, thread_id):
-        threading.Thread.__init__(self)
-        self.soup = soup
-        self.thread_id = thread_id
+class MyThread(Thread):
+    def __init__(self, soup, url_coll):
+        super().__init__()
+        self._soup = soup
+        self._url_coll = url_coll
+        self._thread_id = str(randint(100, 1000))
 
     def run(self):
-        print(self.thread_id + "线程开始：")
-        get_useful_url(self.soup, self.thread_id)
-        print(self.thread_id + "线程退出：")
+        print(self._thread_id + "线程开始：")
+        get_useful_url(self._soup, self._thread_id, self._url_coll)
+        print(self._thread_id + "线程退出：")
 
 
 # 获取有用的URL
-def get_useful_url(soup, thread_id):
-    controller = Controller()
+def get_useful_url(soup, thread_id, url_coll):
     url_list = []
     for link in soup.find_all('a', {"href": re.compile(u'^[\d](.html)?')}):
         href = str(link.get('href')).split("#")[0]
@@ -154,21 +137,20 @@ def get_useful_url(soup, thread_id):
 
     url_list = set(url_list)
     for url in url_list:
-        if not controller.is_exist_url(url):
-            check_url(url)
+        if not url_coll.is_exist_url(url):
+            check_url(url, url_coll)
             print(thread_id + "扫描：" + url)
 
 
 # 检查URL是否符合要求
-def check_url(url):
+def check_url(url, url_coll):
     try:
         response = urlopen(url)
         html = response.read().decode("gbk")
         soup = BeautifulSoup(html, "lxml")
         breadcrumb = soup.find("div", {"id": "breadcrumb"}).get_text()
-        controller = Controller()
         if "童书" in str(breadcrumb):
-            controller.add_url(url)
+            url_coll.add_url(url)
             time.sleep(0.1)
     except (error.HTTPError, UnicodeDecodeError,
             TimeoutError, error.URLError) as e:

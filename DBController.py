@@ -1,64 +1,78 @@
-import random
+from random import randint
 
-from pymongo import *
+from ErrorLog import ErrorLog
 
-"""
-pymongo 数据库控制文件，控制数据库的基本行为封装
+from pymongo import MongoClient, errors
 
-Author:藤藤菜
-Version:1.0
-Date:2018年2月8日
-"""
+HOST = '123.207.85.99'
+PORT = '27017'
+USERNAME = 'book'
+PASSWORD = 'tianjun223.'
+DB_NAME = 'book'
 
 
-class Controller(object):
-    conn = MongoClient()
-    books = None
-    urls = None
-    db = None
+class MyDatabase(object):
+    def __init__(self, host, port, username, password, db_name):
+        self._conn = MongoClient(host=host,
+                                 port=port,
+                                 username=username,
+                                 password=password,
+                                 authSource=db_name,
+                                 authMechanism='SCRAM-SHA-1')
+        self._database = self._conn.get_database(db_name)
 
-    # 初始化构造方法，对数据库的地址数据库名称进行初始化
-    def __init__(self):
-        self.conn = MongoClient("123.207.85.99:27017",  # 服务器地址和端口
-                                username='book',  # 用户名
-                                password='tianjun223.',  # 密码
-                                authSource='book',  # 数据库名
-                                authMechanism='SCRAM-SHA-1')  # 用户验证方式
-        self.db = self.conn.get_database("book")
-        self.books = self.db.book
-        self.urls = self.db.urls
+    @property
+    def database(self):
+        return self._database
 
-    # 插入书籍数据，同时，更新URL列表信息
+
+class BookColl(object):
+    def __init__(self, my_database):
+        self._error_log = ErrorLog()
+        self._db = my_database
+        self._books = self._db.book
+
     def insert_to_db(self, data):
         try:
-            self.books.insert_one(data)
-            self.urls.update({"url": data["url"]}, {'$set': {"isExist": "true"}})
-        except ConnectionError as e:
-            print("插入数据失败：" + e)
+            self._books.insert_one(data)
+        except (errors, Exception) as e:
+            self._error_log.write_error('BookColl插入错误' + e)
 
-    # 添加URL
+
+class UrlColl(object):
+    def __init__(self, my_database):
+        self._error_log = ErrorLog()
+        self._db = my_database
+        self._urls = self._db.urls
+
     def add_url(self, url):
-        result = self.urls.find_one({"url": url})
-        # print(result)
-        if result is None:
-            self.urls.insert_one({"url": url, "isExist": "false"})
-            # print(url)
+        try:
+            if not self.is_exist_url(url):
+                self._urls.insert_one({'url': url, 'isExist': 'false'})
+        except (errors, Exception) as e:
+            self._error_log.write_error('UrlColl添加错误' + e)
 
-    # 数据库中是否已经存在相同的URL
     def is_exist_url(self, url):
-        result = self.urls.find_one({"url": url})
-        if result is None:
-            return False
-        else:
-            return True
+        try:
+            result = self._urls.find_one({"url": url})
+            if result is None:
+                return False
+            else:
+                return True
+        except (errors, Exception) as e:
+            self._error_log.write_error('UrlColl查找错误' + e)
 
-    # 随机跳跃获取一条URL，防止多个爬虫同时爬取一个页面
     def get_url(self):
-        temp = random.randint(1, 100)
-        result = self.urls.find({"isExist": "false"}).skip(temp).limit(1)
-        # result = self.urls.find_one({"isExist": "false"})
-        return result[0]["url"]
+        num = randint(1, 100)
+        try:
+            result = self._urls.find({'isExist': 'false'}).skip(num).limit(1)
+            return result[0]['url']
+        except (errors, Exception) as e:
+            self._error_log.write_error('UrlColl获取url错误' + e)
 
-    # 将抓取过的URL设置标识
-    def delete_url(self, url):
-        self.urls.update({"url": url}, {'$set': {"isExist": "true"}})
+    def update_url(self, url):
+        try:
+            self._urls.update({'url': url}, {'$set': {'isExist': 'true'}})
+        except (errors, Exception) as e:
+            self._error_log.write_error('UrlColl更新URl数据错误' + e)
+

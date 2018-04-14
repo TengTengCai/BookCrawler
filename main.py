@@ -1,28 +1,23 @@
-from DBController import Controller
-import Crawler
-import time
+from Crawler import Crawler
+from DBController import MyDatabase, BookColl, UrlColl
 
-"""
-爬虫启动程序
-
-Author:藤藤菜
-Version:1.0
-Date:2018年2月8日
-"""
+HOST = '123.207.85.99'
+PORT = 27017
+USERNAME = 'book'
+PASSWORD = 'tianjun223.'
+DB_NAME = 'book'
 
 
 def main():
-    start = time.time()
-    controller = Controller()
-    crawler = Crawler.Crawler()
-    url = controller.get_url()
-    # url = "http://product.dangdang.com/1120327072.html"
+    my_database = MyDatabase(HOST, PORT, USERNAME, PASSWORD, DB_NAME).database
+    book_coll = BookColl(my_database)
+    url_coll = UrlColl(my_database)
+    crawler = Crawler(book_coll, url_coll)
+    url = url_coll.get_url()
     while not url is None:
         print("加载：" + url)
         crawler.get_book(url)
-        url = controller.get_url()
-    end = time.time()
-    print(end - start)
+        url = url_coll.get_url()
 
 
 if __name__ == '__main__':

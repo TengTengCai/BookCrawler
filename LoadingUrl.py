@@ -1,6 +1,6 @@
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-from DBController import Controller
+from DBController_old import Controller
 import time
 
 """
