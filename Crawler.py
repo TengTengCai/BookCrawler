@@ -112,8 +112,8 @@ class Crawler:
             thread_id = str(random.randint(1, 1000))
             thread = MyThread(soup, thread_id)
             thread.start()
-        except:
-            print("Error: 无法启动线程")
+        except Exception as e:
+            print("Error: 无法启动线程" + e)
 
             # get_useful_url(soup)
 
@@ -170,5 +170,6 @@ def check_url(url):
         if "童书" in str(breadcrumb):
             controller.add_url(url)
             time.sleep(0.1)
-    except (error.HTTPError, UnicodeDecodeError, TimeoutError, error.URLError) as e:
+    except (error.HTTPError, UnicodeDecodeError,
+            TimeoutError, error.URLError) as e:
         print(e.code)
