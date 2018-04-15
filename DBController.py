@@ -5,7 +5,7 @@ from ErrorLog import ErrorLog
 from pymongo import MongoClient, errors
 
 HOST = '123.207.85.99'
-PORT = '27017'
+PORT = 27017
 USERNAME = 'book'
 PASSWORD = 'tianjun223.'
 DB_NAME = 'book'
@@ -25,7 +25,7 @@ class MyDatabase(object):
         :param password: 密码
         :param db_name: 数据库名称或文档名称
         """
-        # 连接数据库，获取莱娜姐对象
+        # 连接数据库，获取连接对象
         self._conn = MongoClient(host=host,
                                  port=port,
                                  username=username,
@@ -71,6 +71,16 @@ class BookColl(object):
             self._books.insert_one(data)  # 插入数据
         except (errors, Exception) as e:
             self._error_log.write_error('BookColl插入错误' + e)  # 错误日志记录
+
+    def get_book_name(self):
+        """
+        获取书籍名称
+        :return:
+        """
+        for result in self._books.find({'book_name': {'$regex': '\w'}}):
+            print(result['book_name'])
+            with open('book_name.txt', 'a', encoding='utf-8') as f:
+                f.write(result['book_name'] + '\n')
 
 
 class UrlColl(object):

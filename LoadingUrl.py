@@ -1,6 +1,6 @@
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-from DBController_old import Controller
+from DBController import MyDatabase, UrlColl
 import time
 
 """
@@ -13,6 +13,9 @@ Date:2018年2月3日
 
 
 class LoadingUrl(object):
+    def __init__(self):
+        self._database = MyDatabase().database
+        self._url_coll = UrlColl(self._database)
 
     def get_soup(self, url):
         response = urlopen(url)
@@ -53,6 +56,6 @@ class LoadingUrl(object):
         lis = ul.find_all("li")
         for li in lis:
             href = li.find("a", {"class": "pic"})["href"]
-            Controller().add_url(href)
+            self._url_coll.add_url(href)
             time.sleep(0.01)
             # print(href)
