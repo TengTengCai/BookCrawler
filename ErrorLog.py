@@ -18,7 +18,7 @@ class ErrorLog(object):
             # 打开文件
             with open(self._file_name, 'a', encoding='utf-8') as f:
                 now = datetime.now()  # 获取时间
-                error_str = now + ': ' + error_str  # 错误信息拼接时间
+                error_str = str(now) + ': ' + str(error_str)  # 错误信息拼接时间
                 f.write(error_str)  # 写入数据
         except Exception as e:
             print('错误日志写入失败！', e)  # 写入错误日志
