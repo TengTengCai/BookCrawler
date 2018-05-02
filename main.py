@@ -1,6 +1,7 @@
 from Crawler import Crawler
-from DBController import MyDatabase, BookColl, UrlColl
 from time import sleep
+
+from DBController import MyDatabase, UrlColl
 from ErrorLog import ErrorLog
 from threading import Lock
 
@@ -56,18 +57,24 @@ def main():
     thread_count = ThreadCount()  # 创建线程计数对象
     error_log = ErrorLog()  # 创建错误日志记录对象
     error_log.clear_error_log()  # 如果没有文件新建文件，清空错误日志
-    my_database = MyDatabase(HOST, PORT, USERNAME, PASSWORD, DB_NAME).database  # 初始化数据库对象，获取数据库对象
-    book_coll = BookColl(my_database)  # 获取book集合
-    url_coll = UrlColl(my_database)  # 获取URL集合
-    crawler = Crawler(book_coll, url_coll, thread_count)  # 新建爬虫对象
-    url = url_coll.get_url()  # 从URL集合中获取一条URL数据
+    crawler = Crawler(thread_count)  # 新建爬虫对象
+    url = get_one_url()
     while not url is None:  # 判断是否为空
         if thread_count.total < 5:  # 判断当前线程数量是否超出
             print("加载：" + url)
             crawler.get_book(url)  # 让爬虫获取书籍页面
-            url = url_coll.get_url()  # 获取新的URL数据
+            url = get_one_url()  # 获取新的URL数据
         else:  # 线程数量超出
             sleep(10)  # 休眠10秒等待，线程执行完成
+
+
+def get_one_url():
+    conn = MyDatabase()
+    my_database = conn.database  # 初始化数据库对象，获取数据库对象
+    url_coll = UrlColl(my_database)  # 获取URL集合
+    url = url_coll.get_url()  # 从URL集合中获取一条URL数据
+    conn.close_conn()
+    return url
 
 
 if __name__ == '__main__':
