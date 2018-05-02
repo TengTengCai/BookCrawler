@@ -44,6 +44,9 @@ class MyDatabase(object):
         """
         return self._database
 
+    def close_conn(self):
+        self._conn.close()
+
 
 class BookColl(object):
     """
@@ -77,7 +80,8 @@ class BookColl(object):
         获取书籍名称
         :return:
         """
-        for result in self._books.find({'book_name': {'$regex': '\w'}}):
+        # for result in self._books.find({'book_name': {'$regex': '\w'}}):
+        for result in self._books.find():
             print(result['book_name'])
             with open('book_name.txt', 'a', encoding='utf-8') as f:
                 f.write(result['book_name'] + '\n')
