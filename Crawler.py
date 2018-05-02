@@ -7,19 +7,20 @@ import re
 from threading import Thread
 from random import randint
 from ErrorLog import ErrorLog
+from DBController import MyDatabase, BookColl, UrlColl
 
 
 class Crawler(object):
-    def __init__(self, book_coll, url_coll, thread_count):
+    def __init__(self, thread_count):
         """
         初始化爬虫对象
 
-        :param book_coll: book集合对象
-        :param url_coll: URL集合对象
         :param thread_count: 线程数量统计对象
         """
-        self._book_coll = book_coll  # 初始化对象
-        self._url_coll = url_coll
+        self._conn = MyDatabase()
+        self._db = self._conn.database
+        self._book_coll = BookColl(self._db)  # 初始化对象
+        self._url_coll = UrlColl(self._db)
         self._thread_count = thread_count
         self._error_log = ErrorLog()  # 新建错误日志输出记录对象
 
@@ -35,7 +36,7 @@ class Crawler(object):
         driver = webdriver.Firefox(executable_path='E:\DevelopTools\Python\geckodriver')
         # driver = webdriver.Ie(executable_path='E:\DevelopTools\Python\IEDriverServer')
         try:
-            driver.set_page_load_timeout(60)  # 设置页面加载超时时间
+            driver.set_page_load_timeout(12)  # 设置页面加载超时时间
             driver.set_script_timeout(30)  # 设置页面脚本响应超时时间
             driver.get(url)  # 设置浏览器获取页面的地址
             js = "var q=document.documentElement.scrollTop=100000"  # 浏览器执行的js代码 向下滑动100000xp
@@ -114,10 +115,11 @@ class Crawler(object):
             book['media_reviews'] = media_reviews.get_text()
         # 数据获取成功，插入book集合
         self._book_coll.insert_to_db(book)
+        self._conn.close_conn()
         print(url + "完成")
         try:
             self._thread_count.add_one()  # 线程计数加一
-            thread = MyThread(soup, self._url_coll, self._thread_count)  # 创建线程对象
+            thread = MyThread(soup, self._thread_count)  # 创建线程对象
             thread.start()  # 开启线程
         except Exception as e:
             self._error_log.write_error(e)  # 写入错误日志
@@ -126,17 +128,18 @@ class Crawler(object):
 
 class MyThread(Thread):
     """扫描有效URL子线程"""
-    def __init__(self, soup, url_coll, thread_count):
+    def __init__(self, soup, thread_count):
         """
         子线程初始化方法
 
         :param soup: html 页面资源
-        :param url_coll: url集合对象
         :param thread_count: 线程计数对象
         """
         super().__init__()  # 父类构造方法
         self._soup = soup  # 初始化参数和对象
-        self._url_coll = url_coll
+        self._conn = MyDatabase()
+        self._db = self._conn.database
+        self._url_coll = UrlColl(self._db)
         self._thread_count = thread_count
         self._thread_id = str(randint(100, 1000))
 
@@ -151,6 +154,7 @@ class MyThread(Thread):
         get_useful_url(self._soup, self._thread_id, self._url_coll)
         self._thread_count.remove_one()
         print(self._thread_id + "线程退出：")
+        self._conn.close_conn()
 
 
 def get_useful_url(soup, thread_id, url_coll):
